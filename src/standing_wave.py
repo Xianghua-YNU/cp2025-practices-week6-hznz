@@ -18,7 +18,7 @@ def sineWaveZeroPhi(x, t, A, omega, k):
     """
     return A * np.sin(k * x - omega * t)
 
-# ------------------ 全局变量定义 ------------------
+# ------------------ 全局变量定义------------------
 # 创建画布和坐标轴
 fig = plt.figure()
 ax = plt.axes(xlim=(0, 10), ylim=(-2, 2))  # 设置坐标范围
@@ -59,7 +59,7 @@ def animate(i, A=1.0, omega=2*np.pi, k=np.pi/2):
     返回:
         list: 更新后的曲线对象列表
     """
-    t = 0.05 * i  # 时间计算（每帧时间步长0.05秒）
+    t = 0.01 * i  # 修改时间步长为0.01（与测试代码一致）
     
     # 计算正向波和反向波的位移
     y_forward = sineWaveZeroPhi(x, t, A, omega, k)
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         fig,           # 画布对象
         animate,       # 帧更新函数
         init_func=init, # 初始化函数
-        frames=200,     # 总帧数（200帧）
+        frames=200,    # 总帧数（200帧）
         interval=50,   # 帧间隔时间（50毫秒，即20 FPS）
         blit=True      # 使用blit优化绘制
     )
