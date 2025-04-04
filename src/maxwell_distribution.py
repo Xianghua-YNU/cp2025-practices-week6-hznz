@@ -5,6 +5,7 @@ import time
 # 最概然速率 (m/s)
 vp = 1578  
 
+# 麦克斯韦速率分布函数
 def maxwell_distribution(v, vp):
     """
     计算麦克斯韦速率分布函数值
@@ -16,9 +17,9 @@ def maxwell_distribution(v, vp):
     返回：
     分布函数f(v)的值
     """
-    # 在此实现麦克斯韦分布函数
-    pass
+    return (4/np.sqrt(np.pi)) * (v**2 / vp**3) * np.exp(-(v**2) / (vp**2))
 
+# 任务1：计算0到vp的概率百分比
 def percentage_0_to_vp(vp):
     """
     计算速率在0到vp间隔内的分子数占总分子数的百分比
@@ -29,9 +30,10 @@ def percentage_0_to_vp(vp):
     返回：
     百分比值
     """
-    # 在此实现0到vp的积分计算
-    pass
+    result, _ = quad(maxwell_distribution, 0, vp, args=(vp,))
+    return result * 100
 
+# 任务2：计算0到3.3vp的概率百分比
 def percentage_0_to_3_3vp(vp):
     """
     计算速率在0到3.3vp间隔内的分子数占总分子数的百分比
@@ -42,9 +44,10 @@ def percentage_0_to_3_3vp(vp):
     返回：
     百分比值
     """
-    # 在此实现0到3.3vp的积分计算
-    pass
+    result, _ = quad(maxwell_distribution, 0, 3.3*vp, args=(vp,))
+    return result * 100
 
+# 任务3：计算3×10^4到3×10^8 m/s的概率百分比
 def percentage_3e4_to_3e8(vp):
     """
     计算速率在3×10^4到3×10^8 m/s间隔内的分子数占总分子数的百分比
@@ -55,9 +58,9 @@ def percentage_3e4_to_3e8(vp):
     返回：
     百分比值
     """
-    # 在此实现3×10^4到3×10^8的积分计算
-    pass
-
+    result, _ = quad(maxwell_distribution, 3e4, 3e8, args=(vp,))
+    return result * 100
+    
 def trapezoidal_rule(f, a, b, n):
     """
     使用梯形法则计算函数f在区间[a,b]上的定积分
@@ -71,8 +74,20 @@ def trapezoidal_rule(f, a, b, n):
     返回:
     积分近似值
     """
-    # 在此实现梯形积分法则
-    pass
+    h = (b - a) / n
+    result = 0.5 * (f(a) + f(b))
+    
+    for i in range(1, n):
+        result += f(a + i * h)
+        
+    result *= h
+    return result
+
+# 使用梯形积分法计算任务1-3
+def percentage_0_to_vp_trap(vp, n=1000):
+    """使用梯形积分法计算0到vp的概率百分比"""
+    result = trapezoidal_rule(lambda v: maxwell_distribution(v, vp), 0, vp, n)
+    return result * 100
 
 def compare_methods(task_name, quad_func, trap_func, vp, n_values=[10, 100, 1000]):
     """比较quad和梯形积分法的结果和性能"""
@@ -97,7 +112,6 @@ def compare_methods(task_name, quad_func, trap_func, vp, n_values=[10, 100, 1000
         print(f"{n:<12}{trap_result:<15.6f}{rel_error:<15.6f}{trap_time:<15.6f}")
 
 if __name__ == "__main__":
-    # 测试代码
     print("=== 使用quad方法的结果 ===")
     print("0 到 vp 间概率百分比:", percentage_0_to_vp(vp), "%")
     print("0 到 3.3vp 间概率百分比:", percentage_0_to_3_3vp(vp), "%")
