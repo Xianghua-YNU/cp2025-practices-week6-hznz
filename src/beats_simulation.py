@@ -28,34 +28,34 @@ def simulate_beat_frequency(f1=440, f2=444, A1=1.0, A2=1.0, t_start=0, t_end=1, 
          plt.figure(figsize=(12, 6))
          
         # 绘制第一个波
-        plt.subplot(3, 1, 1)
+         plt.subplot(3, 1, 1)
         # 学生任务6: 完成wave1的绘制
-        plt.plot(t, wave1, label=f'Wave 1 (f={f1} Hz, A={A1})')
-        plt.title('Wave 1')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Amplitude')
-        plt.legend()
-        
+         plt.plot(t, wave1, label=f'Wave 1 (f={f1} Hz, A={A1})')
+         plt.title('Wave 1')
+         plt.xlabel('Time (s)')
+         plt.ylabel('Amplitude')
+         plt.legend()
+         
         # 绘制第二个波
-        plt.subplot(3, 1, 2)
+         plt.subplot(3, 1, 2)
         # 学生任务7: 完成wave2的绘制
-        plt.plot(t, wave2, label=f'Wave 2 (f={f2} Hz, A={A2})')
-        plt.title('Wave 2')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Amplitude')
-        plt.legend()
+         plt.plot(t, wave2, label=f'Wave 2 (f={f2} Hz, A={A2})')
+         plt.title('Wave 2')
+         plt.xlabel('Time (s)')
+         plt.ylabel('Amplitude')
+         plt.legend()
         
         # 绘制叠加波
-        plt.subplot(3, 1, 3)
+         plt.subplot(3, 1, 3)
         # 学生任务8: 完成superposed_wave的绘制
-        plt.plot(t, superposed_wave, label=f'Superposed Wave (Beat f={beat_frequency} Hz)')
-        plt.title('Superposed Wave')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Amplitude')
-        plt.legend()
+         plt.plot(t, superposed_wave, label=f'Superposed Wave (Beat f={beat_frequency} Hz)')
+         plt.title('Superposed Wave')
+         plt.xlabel('Time (s)')
+         plt.ylabel('Amplitude')
+         plt.legend()
 
-        plt.tight_layout()
-        plt.show()
+         plt.tight_layout()
+         plt.show()
 
     return t, superposed_wave, beat_frequency
 
