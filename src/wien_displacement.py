@@ -16,76 +16,82 @@ import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 from scipy import constants
 
-def plot_wien_equation():
-    """绘制维恩方程的两个函数图像
-    
-    绘制方程 5e^(-x) + x - 5 = 0 的图像解释，包括：
-    - y = 5e^(-x) 曲线
-    - y = 5 - x 直线
-    两条曲线的交点即为方程的解
-    """
-    # TODO: 创建x轴数据点
-    x = None
-    
-    # TODO: 创建图形并设置大小
-    
-    # TODO: 绘制两条曲线
-    
-    # TODO: 设置坐标轴标签和标题
-    
-    # TODO: 添加图例和网格
-    
-    # TODO: 显示图形
-    pass
-
 def wien_equation(x):
-    """维恩方程：5e^(-x) + x - 5 = 0
+    """定义维恩位移方程 5e^{-x} + x - 5 = 0
     
     参数:
-    x (float): 方程的自变量
-    
+        x (float): 方程变量
+        
     返回:
-    float: 方程的函数值
+        float: 方程计算结果
     """
-    # TODO: 返回维恩方程的函数值
-    return None
+    return 5 * np.exp(-x) + x - 5
 
-def solve_wien_constant(x0):
-    """求解维恩位移常数
-    
-    通过求解非线性方程 5e^(-x) + x - 5 = 0 得到 x 值，
-    然后计算维恩位移常数 b = hc/(k_B * x)
+def plot_wien_equation(x_range=(-1, 6), solution=None):
+    """可视化维恩方程求解过程
     
     参数:
-    x0 (float): 求解方程的初始值
-    
-    返回:
-    tuple: (x, b)
-        - x (float): 非线性方程的解
-        - b (float): 维恩位移常数，单位：m·K
+        x_range (tuple): 绘图范围，默认(-1, 6)
+        solution (float): 方程解的标记位置，可选
     """
-    # TODO: 使用fsolve求解非线性方程
-    x = None
+    x = np.linspace(x_range[0], x_range[1], 400)
+    y1 = 5 * np.exp(-x)
+    y2 = 5 - x
     
-    # TODO: 计算维恩位移常数
-    b = None
+    plt.figure(figsize=(10, 6))
+    plt.plot(x, y1, 'r-', lw=2, label='$y = 5e^{-x}$')
+    plt.plot(x, y2, 'b--', lw=2, label='$y = 5 - x$')
     
-    return x, b
+    if solution is not None:
+        plt.scatter(solution, 5 * np.exp(-solution), 
+                   c='green', s=100, zorder=5,
+                   label=f'Solution $x={solution:.3f}$')
+    
+    plt.title("Graphical Solution of Wien's Displacement Law Equation", fontsize=14)
+    plt.xlabel("x", fontsize=12)
+    plt.ylabel("y", fontsize=12)
+    plt.grid(True, alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
 
-def calculate_temperature(wavelength, x0=5.0):
-    """根据波长计算温度
-    
-    基于维恩位移定律 λT = b，根据辐射峰值波长计算黑体温度
+def solve_wien_constant(x0=5.0):
+    """求解维恩位移方程并计算位移常数
     
     参数:
-    wavelength (float): 峰值波长，单位：米
-    x0 (float, optional): 求解方程的初始值，默认为5.0
-    
+        x0 (float): 初始猜测值，默认5.0
+        
     返回:
-    float: 黑体温度，单位：开尔文
+        tuple: (方程解x, 维恩位移常数b) 单位: (无量纲, m·K)
     """
-    # TODO: 计算温度
-    return None
+    # 数值求解非线性方程
+    x_solution = fsolve(wien_equation, x0)[0]
+    
+    # 使用国际标准物理常数
+    h = constants.h       # 普朗克常数 (J·s)
+    c = constants.c       # 光速 (m/s)
+    k_B = constants.k     # 玻尔兹曼常数 (J/K)
+    
+    # 计算维恩位移常数
+    b = (h * c) / (k_B * x_solution)
+    return x_solution, b
+
+# 预计算维恩常数(使用标准初始值)
+WIEN_CONSTANT = solve_wien_constant()[1]
+
+def calculate_temperature(wavelength):
+    """根据峰值波长计算黑体温度
+    
+    参数:
+        wavelength (float): 峰值波长，单位：米
+        
+    返回:
+        float: 黑体温度，单位：K
+        
+    示例:
+        >>> calculate_temperature(502e-9)  # 计算太阳表面温度
+        5778.0
+    """
+    return WIEN_CONSTANT / wavelength
 
 if __name__ == "__main__":
     # 绘制方程图像

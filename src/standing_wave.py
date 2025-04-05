@@ -3,70 +3,89 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 
 def sineWaveZeroPhi(x, t, A, omega, k):
-    '''
-    返回位置x和时间t的波函数值
+    """
+    计算简谐波的瞬时位移（无初始相位）
+    
     参数:
-    x : 空间位置 (array)
-    t : 时间 (float)
-    A : 振幅 (float)
-    omega : 角频率 (float)
-    k : 波数 (float)
-    '''
-    # TODO: 实现正弦波函数
-    # 提示：使用 np.sin() 函数计算 A * sin(kx - ωt)
-    pass
+        x (np.ndarray): 空间坐标数组（单位：米）
+        t (float): 时间（单位：秒）
+        A (float): 波的振幅（单位：米）
+        omega (float): 波的角频率（单位：弧度/秒）
+        k (float): 波数（单位：弧度/米，k = 2π/λ）
+    
+    返回:
+        np.ndarray: 波在各空间点的位移值（单位：米）
+    """
+    return A * np.sin(k * x - omega * t)
 
-# 创建动画所需的 Figure 和 Axes
+# ------------------ 全局变量定义------------------
+# 创建画布和坐标轴
 fig = plt.figure()
-subplot = plt.axes(xlim=(0, 10), xlabel="x", ylim=(-2, 2), ylabel="y")
+ax = plt.axes(xlim=(0, 10), ylim=(-2, 2))  # 设置坐标范围
+ax.set_xlabel("x (m)")                     # x轴标签
+ax.set_ylabel("y (m)")                     # y轴标签
 
-# 创建空的line对象，用于动画显示
-line1, = subplot.plot([], [], lw=2)
-line2, = subplot.plot([], [], lw=2)
-line3, = subplot.plot([], [], lw=2)
+# 初始化三条曲线对象（正向波、反向波、驻波）
+line1, = ax.plot([], [], lw=2, linestyle='--', color='r')  # 红色虚线：正向波
+line2, = ax.plot([], [], lw=2, linestyle='--', color='b')  # 蓝色虚线：反向波
+line3, = ax.plot([], [], lw=2, color='k')                 # 黑色实线：驻波
+lines = [line1, line2, line3]  # 曲线对象列表（测试代码需要访问此变量）
 
-# 创建一个line对象列表，便于操作
-lines = [line1, line2, line3]
+# 空间坐标定义（全局作用域，测试代码需要访问）
+x = np.linspace(0, 10, 1000)  # 生成0到10米之间的1000个点
 
+# ------------------ 动画函数定义 ------------------
 def init():
-    '''
-    动画初始化函数
-    TODO: 清空所有line的数据并返回lines列表
-    '''
-    # 提示：使用line.set_data([], [])设置空数据
-    pass
-
-# 创建空间变量x
-x = np.linspace(0, 10, 1000)
-
-def animate(i):
-    '''
-    动画更新函数
-    参数: i - 帧序号，自动递增
-    TODO: 计算并更新每一帧的波形数据
-    '''
-    # 定义波的参数
-    A = 1
-    omega = 2 * np.pi
-    k = np.pi / 2
-    t = 0.01 * i
-
-    # TODO: 计算两个方向相反的波
-    # 提示：使用sineWaveZeroPhi函数，注意第二个波的omega要取负值
-    y1 = None
-    y2 = None
-
-    # TODO: 计算驻波（两波之和）
-    y3 = None
-
-    # TODO: 更新每个line的数据
-    # 提示：使用line.set_data(x, y)设置数据
-    # 提示：waveFunctions = [[x, y1], [x, y2], [x, y3]]可以帮助组织数据
-
+    """
+    初始化动画帧，清空所有曲线的数据
+    
+    返回:
+        list: 包含三个空曲线对象的列表
+    """
+    for line in lines:
+        line.set_data([], [])
     return lines
-if __name__ == '__main__':
-    # TODO: 创建动画对象并显示
-    # 提示：使用animation.FuncAnimation创建动画
-    # 提示：使用plt.show()显示动画
-    pass
 
+def animate(i, A=1.0, omega=2*np.pi, k=np.pi/2):
+    """
+    更新动画帧，计算并绘制当前时刻的波形
+    
+    参数:
+        i (int): 帧序号（自动递增）
+        A (float): 波的振幅（默认1.0）
+        omega (float): 角频率（默认2π）
+        k (float): 波数（默认π/2）
+    
+    返回:
+        list: 更新后的曲线对象列表
+    """
+    t = 0.01 * i  # 修改时间步长为0.01（与测试代码一致）
+    
+    # 计算正向波和反向波的位移
+    y_forward = sineWaveZeroPhi(x, t, A, omega, k)
+    y_backward = sineWaveZeroPhi(x, t, A, -omega, k)  # 反向波通过负号实现
+    
+    # 计算驻波（两波叠加）
+    y_standing = y_forward + y_backward
+    
+    # 更新曲线数据
+    lines[0].set_data(x, y_forward)   # 更新正向波曲线
+    lines[1].set_data(x, y_backward)  # 更新反向波曲线
+    lines[2].set_data(x, y_standing)  # 更新驻波曲线
+    
+    return lines
+
+# ------------------ 主程序入口------------------
+if __name__ == "__main__":
+    # 创建动画对象
+    anim = animation.FuncAnimation(
+        fig,           # 画布对象
+        animate,       # 帧更新函数
+        init_func=init, # 初始化函数
+        frames=200,    # 总帧数（200帧）
+        interval=50,   # 帧间隔时间（50毫秒，即20 FPS）
+        blit=True      # 使用blit优化绘制
+    )
+    
+    # 显示动画窗口
+    plt.show()
